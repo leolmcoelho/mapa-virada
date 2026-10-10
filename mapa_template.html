@@ -1,0 +1,365 @@
+<title>Mapa da Virada 2018–2026</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-K0B9H18GD0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-K0B9H18GD0');
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: painel de leitura à esquerda (resumo antes do detalhe), mapa ocupa o resto; empilha no celular */
+:root {
+  --bg: #f6f6f3; --panel: #fcfcfb; --fg: #16171a; --fg2: #52514e; --muted: #85837d; --line: #e2e1dc;
+  --land: #ecebe6; --border: #c9c7c0;
+  --c0: #e34948; --c1: #1baf7a; --c2: #eda100; --c3: #4a3aa7; --c4: #e87ba4; --c5: #2a78d6; --c6: #b9b7b0;
+  --div-neg: #2a78d6; --div-mid: #e4e2dd; --div-pos: #e34948;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f0f0e; --panel: #1a1a19; --fg: #f4f3ef; --fg2: #c3c2b7; --muted: #8f8d86; --line: #2e2e2b;
+  --land: #232321; --border: #45443f;
+  --c0: #e66767; --c1: #199e70; --c2: #c98500; --c3: #9085e9; --c4: #d55181; --c5: #3987e5; --c6: #5f5e59;
+  --div-neg: #3987e5; --div-mid: #3a3a37; --div-pos: #e66767; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f0f0e; --panel: #1a1a19; --fg: #f4f3ef; --fg2: #c3c2b7; --muted: #8f8d86; --line: #2e2e2b;
+  --land: #232321; --border: #45443f;
+  --c0: #e66767; --c1: #199e70; --c2: #c98500; --c3: #9085e9; --c4: #d55181; --c5: #3987e5; --c6: #5f5e59;
+  --div-neg: #3987e5; --div-mid: #3a3a37; --div-pos: #e66767; color-scheme: dark }
+html, body { height: 100%; }
+@media (min-width: 761px) { html, body { overflow: hidden; } }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); }
+.app { display: grid; grid-template-columns: minmax(320px, 400px) 1fr; height: 100%; }
+aside { background: var(--panel); border-right: 1px solid var(--line); overflow-y: auto; padding: 20px 20px 28px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+h1 { font-family: var(--display); font-weight: 800; font-size: 1.45rem; line-height: 1.15; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+.sub { color: var(--fg2); font-size: 0.86rem; line-height: 1.45; margin: 6px 0 0; }
+.lbl { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; margin-bottom: 6px; display: block; }
+.controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.controls .full { grid-column: 1 / -1; }
+select, input { width: 100%; box-sizing: border-box; font: inherit; font-size: 0.88rem; padding: 7px 9px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--fg); }
+select:focus-visible, input:focus-visible, button:focus-visible { outline: 2px solid var(--c5); outline-offset: 1px; }
+.seg { display: flex; flex-wrap: wrap; gap: 4px; }
+.seg button { font: inherit; font-size: 0.8rem; padding: 6px 10px; border: 1px solid var(--border); background: transparent; color: var(--fg2); border-radius: 999px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--fg); color: var(--panel); border-color: var(--fg); }
+.kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.kpi { border-top: 2px solid var(--line); padding-top: 6px; }
+.kpi b { font-family: var(--display); font-size: 1.25rem; font-variant-numeric: tabular-nums; display: block; }
+.kpi span { font-size: 0.72rem; color: var(--fg2); line-height: 1.3; display: block; }
+table { width: 100%; border-collapse: collapse; font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+th { text-align: right; font-weight: 600; color: var(--muted); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 4px 4px 6px; border-bottom: 1px solid var(--line); }
+th:first-child, td:first-child { text-align: left; }
+td { padding: 6px 4px; border-bottom: 1px solid var(--line); text-align: right; vertical-align: top; }
+tr.cat { cursor: pointer; }
+tr.cat.off td { opacity: 0.38; }
+tr.cat:hover td, tr.cat.sel td { background: var(--bg); }
+#pendular th, #pendular td { padding-inline: 3px; } #pendular td { white-space: nowrap; } #pendular td.cname { white-space: normal; }
+.bar { display: block; height: 4px; margin-top: 4px; background: var(--line); border-radius: 2px; }
+.bar i { display: block; height: 100%; background: var(--c2); border-radius: 2px; }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 7px; vertical-align: -1px; box-shadow: 0 0 0 2px var(--panel); }
+.cname { color: var(--fg); }
+.cname small { display: block; color: var(--muted); font-size: 0.7rem; margin-left: 17px; }
+.ramp { height: 10px; border-radius: 3px; }
+.ramp-l { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--fg2); margin-top: 4px; font-variant-numeric: tabular-nums; }
+.note { font-size: 0.74rem; color: var(--muted); line-height: 1.5; }
+main { position: relative; min-width: 0; }
+#map { position: absolute; inset: 0; }
+#tip { position: absolute; pointer-events: none; background: var(--panel); color: var(--fg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 0.8rem; box-shadow: 0 6px 24px rgb(0 0 0 / 0.18); max-width: 300px; z-index: 5; }
+#tip h3 { margin: 0 0 2px; font-size: 0.86rem; font-family: var(--display); font-weight: 700; }
+#tip .where { color: var(--fg2); font-size: 0.74rem; margin-bottom: 8px; }
+#tip table td { padding: 3px 4px; }
+#credito, #semruas { position: absolute; z-index: 4; background: var(--panel); color: var(--fg2); font-size: 0.7rem; padding: 3px 8px; border-radius: 4px; }
+#credito { right: 6px; bottom: 6px; } #credito a { color: inherit; }
+#semruas { left: 50%; top: 12px; transform: translateX(-50%); font-size: 0.8rem; padding: 8px 12px; border: 1px solid var(--border); max-width: 80%; }
+#loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--fg2); font-size: 0.9rem; }
+@media (max-width: 760px) {
+  .app { grid-template-columns: 1fr; grid-template-rows: 58vh auto; height: auto; }
+  main { grid-row: 1; height: 58vh; }
+  aside { grid-row: 2; border-right: 0; border-top: 1px solid var(--line); overflow: visible; }
+}
+</style>
+
+<div class="app">
+  <aside>
+    <header>
+      <h1>Mapa da Virada 2018–2026</h1>
+      <p class="sub">Cada ponto é um local de votação. A cor mostra quem venceu ali em 2018 (2º turno), 2022 (2º turno) e 2026 (1º turno), com base nos boletins por seção do TSE.</p>
+    </header>
+
+    <div class="controls">
+      <div><label class="lbl" for="uf">Estado</label><select id="uf"></select></div>
+      <div><label class="lbl" for="reg" id="reg-lbl">Região</label><select id="reg"></select></div>
+      <div class="full"><label class="lbl" for="mun">Município</label><input id="mun" list="munlist" placeholder="Digite o nome"><datalist id="munlist"></datalist></div>
+      <div class="full"><span class="lbl">Colorir por</span>
+        <div class="seg" id="modo">
+          <button data-m="padrao" aria-pressed="true">Trajetória</button>
+          <button data-m="delta" aria-pressed="false">Variação 22→26</button>
+          <button data-m="r26" aria-pressed="false">2026</button>
+          <button data-m="r22" aria-pressed="false">2022</button>
+          <button data-m="r18" aria-pressed="false">2018</button>
+        </div>
+      </div>
+      <div class="full"><span class="lbl">Fundo do mapa</span>
+        <div class="seg" id="fundo">
+          <button data-f="simples" aria-pressed="true">Simples</button>
+          <button data-f="ruas" aria-pressed="false">Ruas</button>
+        </div>
+      </div>
+    </div>
+
+    <section>
+      <span class="lbl" id="kpi-title">Brasil</span>
+      <div class="kpis" id="kpis"></div>
+    </section>
+
+    <section id="pendular"></section>
+
+    <section id="legend"></section>
+
+    <p class="note">Percentuais no voto dos dois polos: PT ÷ (PT + candidato do PSL/PL). A variação compara 1º turno de 2022 com 1º turno de 2026, para não misturar turnos. Seções foram casadas entre eleições pelo número (UF, município, zona e seção); cerca de 8% das seções de 2026 não existiam em 2022 e entram como “Sem histórico”. Clique numa linha da tabela para esconder ou mostrar a categoria.</p>
+  </aside>
+  <main>
+    <div id="map"></div>
+    <div id="tip" hidden></div>
+    <div id="credito" hidden>© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors</div>
+    <div id="semruas" hidden>O fundo de ruas não carrega nesta janela. Abra o mapa em leolmcoelho.github.io/mapa-virada para vê-lo.</div>
+    <div id="loading">Carregando 93 mil locais de votação…</div>
+  </main>
+</div>
+
+<script>const ESTADOS = __ESTADOS__;</script>
+<script src="https://unpkg.com/deck.gl@8.9.36/dist.min.js"></script>
+<script src="dados.js?v=4"></script>
+<script>
+// LOCAIS: [lat, lon, uf, mun, bairro, nome, secoes, votos, a18, b18, a22_1, b22_1, a22, b22, a26, b26, regiao, macro, votos_pendulares, votos_que_mudaram, aptos22, abst22, aptos26, abst26]  (aptos/abstenção do 1º turno)  (a = PT, b = direita)
+const CATS = [
+  { n: "Fiel ao PT", d: "Haddad → Lula → Lula" },
+  { n: "Virou em 2022 e ficou", d: "Bolsonaro → Lula → Lula" },
+  { n: "Pendular (ida e volta)", d: "Bolsonaro → Lula → Flávio ou Haddad → Bolsonaro → Lula" },
+  { n: "PT perdeu", d: "Haddad → (Lula ou Bolsonaro) → Flávio" },
+  { n: "Direita perdeu em 2026", d: "Bolsonaro → Bolsonaro → Lula" },
+  { n: "Fiel à direita", d: "Bolsonaro → Bolsonaro → Flávio" },
+  { n: "Sem histórico / outros", d: "Seção nova, empate ou outra trajetória" },
+];
+const bip = (a, b) => (a == null || a + b === 0) ? null : 100 * a / (a + b);
+const side = (a, b) => (a == null || a === b) ? null : (a > b ? "E" : "D");
+
+const N = LOCAIS.length;
+const cat = new Uint8Array(N), b18 = new Float32Array(N), b22 = new Float32Array(N), b22t1 = new Float32Array(N), b26 = new Float32Array(N);
+for (let i = 0; i < N; i++) {
+  const r = LOCAIS[i];
+  const s = side(r[8], r[9]) + side(r[12], r[13]) + side(r[14], r[15]); // "null" vira texto e cai em "outros"
+  cat[i] = s === "EEE" ? 0 : s === "DEE" ? 1 : (s === "DED" || s === "EDE") ? 2 : (s === "EED" || s === "EDD") ? 3 : s === "DDE" ? 4 : s === "DDD" ? 5 : 6;
+  b18[i] = bip(r[8], r[9]) ?? NaN; b22t1[i] = bip(r[10], r[11]) ?? NaN; b22[i] = bip(r[12], r[13]) ?? NaN; b26[i] = bip(r[14], r[15]) ?? NaN;
+}
+
+const state = { fundo: "simples", modo: "padrao", uf: -1, reg: -1, macro: -1, mun: -1, off: new Set() };
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const rgb = h => [1, 3, 5].map(k => parseInt(h.slice(k, k + 2), 16));
+let C = {};
+function readColors() {
+  C = { cats: CATS.map((_, k) => rgb(css("--c" + k))), neg: rgb(css("--div-neg")), mid: rgb(css("--div-mid")), pos: rgb(css("--div-pos")),
+        land: rgb(css("--land")), border: rgb(css("--border")) };
+}
+const mix = (a, b, t) => a.map((v, k) => Math.round(v + (b[k] - v) * t));
+// divergente: -lim..+lim, cinza no meio, PT (vermelho) positivo
+function div(v, lim) {
+  if (isNaN(v)) return [...C.cats[6], 120];
+  const t = Math.max(-1, Math.min(1, v / lim));
+  return t < 0 ? mix(C.mid, C.neg, -t) : mix(C.mid, C.pos, t);
+}
+const MODOS = {
+  padrao: { color: i => C.cats[cat[i]] },
+  delta:  { color: i => div(b26[i] - b22t1[i], 12), lim: 12, title: "Variação do PT (pontos), 1º turno 2022 → 1º turno 2026", lo: "Lula perdeu", hi: "Lula ganhou", fmt: v => (v > 0 ? "+" : "") + v },
+  r26:    { color: i => div(b26[i] - 50, 25), lim: 25, title: "Lula × Flávio, 1º turno 2026 (% de Lula)", lo: "Flávio", hi: "Lula", fmt: v => 50 + v + "%" },
+  r22:    { color: i => div(b22[i] - 50, 25), lim: 25, title: "Lula × Bolsonaro, 2º turno 2022 (% de Lula)", lo: "Bolsonaro", hi: "Lula", fmt: v => 50 + v + "%" },
+  r18:    { color: i => div(b18[i] - 50, 25), lim: 25, title: "Haddad × Bolsonaro, 2º turno 2018 (% de Haddad)", lo: "Bolsonaro", hi: "Haddad", fmt: v => 50 + v + "%" },
+};
+
+// escopo = estado/região/macrorregião (sem o município); usado também pelo ranking pendular
+const inScope = (i, comMacro = true) => { const r = LOCAIS[i];
+  return (state.uf < 0 || r[2] === state.uf) && (state.reg < 0 || r[16] === state.reg) && (!comMacro || state.macro < 0 || r[17] === state.macro); };
+const inSel = i => inScope(i) && (state.mun < 0 || LOCAIS[i][3] === state.mun);
+const visible = i => inSel(i) && !(state.modo === "padrao" && state.off.has(cat[i]));
+const fmtN = n => n.toLocaleString("pt-BR");
+const curto = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace(".", ",") + " mi" : Math.round(n / 1e3) + " mil";
+const pct = (a, b) => b ? (100 * a / b).toFixed(1).replace(".", ",") + "%" : "–";
+
+// ---------- painel ----------
+const ufSel = document.getElementById("uf"), regSel = document.getElementById("reg"), munIn = document.getElementById("mun");
+ufSel.innerHTML = '<option value="-1">Brasil inteiro</option>' + UFS.map((u, k) => [u, k]).sort().map(([u, k]) => `<option value="${k}">${u}</option>`).join("");
+function fillMuns() {
+  const set = new Set(); for (let i = 0; i < N; i++) if (inScope(i)) set.add(LOCAIS[i][3]);
+  document.getElementById("munlist").innerHTML = [...set].map(k => MUNS[k]).sort().map(m => `<option value="${m}">`).join("");
+}
+
+// sem estado: as 5 grandes regiões; com estado: as macrorregiões (regiões intermediárias do IBGE) dele
+function fillRegs() {
+  const brasil = state.uf < 0, set = new Set();
+  for (let i = 0; i < N; i++) if (brasil || LOCAIS[i][2] === state.uf) set.add(LOCAIS[i][brasil ? 16 : 17]);
+  const nomes = brasil ? REGS : MACROS;
+  document.getElementById("reg-lbl").textContent = brasil ? "Região" : "Macrorregião";
+  regSel.innerHTML = `<option value="-1">${brasil ? "Todas as regiões" : "Todas"}</option>` +
+    [...set].map(k => [nomes[k].replace(/ \/ \w\w$/, ""), k]).sort().map(([n, k]) => `<option value="${k}">${n}</option>`).join("");
+  regSel.value = brasil ? state.reg : state.macro;
+}
+
+// ranking das macrorregiões com mais voto pendular, dentro do escopo atual
+function renderPendular() {
+  const m = new Map();
+  for (let i = 0; i < N; i++) {
+    if (!inScope(i, false)) continue;
+    const r = LOCAIS[i], k = r[17]; let g = m.get(k);
+    if (!g) m.set(k, g = { k, uf: r[2], votos: 0, pend: 0, mudou: 0, a: 0, b: 0 });
+    g.votos += r[7]; g.pend += r[18]; g.mudou += r[19]; // contados seção a seção, como no Excel
+    g.a += r[14] || 0; g.b += r[15] || 0;
+  }
+  const min = state.uf < 0 ? 50000 : 10000;
+  const top = [...m.values()].filter(g => g.votos >= min).sort((x, y) => y.pend / y.votos - x.pend / x.votos).slice(0, 10);
+  const max = top.length ? top[0].pend / top[0].votos : 1;
+  const el = document.getElementById("pendular");
+  el.innerHTML = `<span class="lbl">Macrorregiões mais pendulares${state.uf >= 0 ? " em " + UFS[state.uf] : ""}</span>
+    <table><thead><tr><th>Macrorregião</th><th>Votantes</th><th>Pendular</th><th>Mudou</th><th>Lula 2026</th></tr></thead><tbody>` +
+    top.map(g => `<tr class="cat${g.k === state.macro ? " sel" : ""}" data-k="${g.k}" data-uf="${g.uf}" tabindex="0"><td class="cname">${MACROS[g.k]}
+      <span class="bar"><i style="width:${(100 * g.pend / g.votos / max).toFixed(0)}%"></i></span></td>
+      <td title="${fmtN(g.votos)} votantes">${curto(g.votos)}</td><td title="${fmtN(g.pend)} votos">${pct(g.pend, g.votos)}</td><td>${pct(g.mudou, g.votos)}</td><td>${pct(g.a, g.a + g.b)}</td></tr>`).join("") +
+    `</tbody></table><p class="note">Votantes: quem votou para presidente em 2026 (passe o mouse para o número exato). Pendular: % dos votos de 2026 em locais que viraram e voltaram (Bolsonaro → Lula → Flávio ou o inverso). Mudou: trocaram de lado ao menos uma vez. Clique para ir à região.</p>`;
+  el.querySelectorAll("tr.cat").forEach(tr => {
+    const go = () => { state.uf = +tr.dataset.uf; state.reg = -1; state.macro = +tr.dataset.k; state.mun = -1; munIn.value = ""; ufSel.value = state.uf; fillRegs(); fillMuns(); update(true); };
+    tr.onclick = go; tr.onkeydown = e => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), go());
+  });
+}
+
+function renderPanel() {
+  renderPendular();
+  const agg = CATS.map(() => ({ locais: 0, votos: 0 }));
+  const s = { a18: 0, b18: 0, a22: 0, b22: 0, a26: 0, b26: 0, ap22: 0, ab22: 0, ap26: 0, ab26: 0 };
+  for (let i = 0; i < N; i++) {
+    if (!inSel(i)) continue;
+    const r = LOCAIS[i]; agg[cat[i]].locais++; agg[cat[i]].votos += r[7];
+    s.a18 += r[8] || 0; s.b18 += r[9] || 0; s.a22 += r[12] || 0; s.b22 += r[13] || 0; s.a26 += r[14] || 0; s.b26 += r[15] || 0; s.ap22 += r[20]; s.ab22 += r[21]; s.ap26 += r[22]; s.ab26 += r[23];
+  }
+  document.getElementById("kpi-title").textContent = state.mun >= 0 ? MUNS[state.mun] : state.macro >= 0 ? MACROS[state.macro] : state.reg >= 0 ? REGS[state.reg] : state.uf >= 0 ? UFS[state.uf] : "Brasil";
+  document.getElementById("kpis").innerHTML = [
+    [pct(s.a18, s.a18 + s.b18), "Haddad em 2018<br>2º turno"],
+    [pct(s.a22, s.a22 + s.b22), "Lula em 2022<br>2º turno"],
+    [pct(s.a26, s.a26 + s.b26), "Lula × Flávio 2026<br>1º turno"],
+    [pct(s.ab22, s.ap22), "Abstenção 2022<br>1º turno"],
+    [pct(s.ab26, s.ap26), "Abstenção 2026<br>1º turno"],
+    [fmtN(s.ab26), "Não votaram<br>em 2026"],
+  ].map(([v, l]) => `<div class="kpi"><b>${v}</b><span>${l}</span></div>`).join("");
+
+  const leg = document.getElementById("legend");
+  if (state.modo === "padrao") {
+    const tv = agg.reduce((a, x) => a + x.votos, 0);
+    leg.innerHTML = `<span class="lbl">Trajetória do local de votação</span><table><thead><tr><th>Categoria</th><th>Locais</th><th>Votos 2026</th></tr></thead><tbody>` +
+      CATS.map((c, k) => `<tr class="cat${state.off.has(k) ? " off" : ""}" data-k="${k}" tabindex="0"><td class="cname"><span class="sw" style="background:var(--c${k})"></span>${c.n}<small>${c.d}</small></td><td>${fmtN(agg[k].locais)}</td><td>${pct(agg[k].votos, tv)}</td></tr>`).join("") + "</tbody></table>";
+    leg.querySelectorAll("tr.cat").forEach(tr => {
+      const flip = () => { const k = +tr.dataset.k; state.off.has(k) ? state.off.delete(k) : state.off.add(k); update(); };
+      tr.onclick = flip; tr.onkeydown = e => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), flip());
+    });
+  } else {
+    const m = MODOS[state.modo];
+    leg.innerHTML = `<span class="lbl">${m.title}</span><div class="ramp" style="background:linear-gradient(90deg,var(--div-neg),var(--div-mid),var(--div-pos))"></div>
+      <div class="ramp-l"><span>${m.fmt(-m.lim)} · ${m.lo}</span><span>${m.fmt(0)}</span><span>${m.hi} · ${m.fmt(m.lim)}</span></div>`;
+  }
+}
+
+// ---------- mapa ----------
+const idx = Array.from({ length: N }, (_, i) => i);
+let deckgl, view = { longitude: -52, latitude: -15, zoom: 3.6, minZoom: 3, maxZoom: 15 };
+// fundo de ruas: tiles padrão do OpenStreetMap (sem chave; uso leve, com crédito visível)
+function ruas() {
+  return new deck.TileLayer({
+    id: "ruas", data: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    minZoom: 0, maxZoom: 19, tileSize: 256, maxRequests: 6,
+    onTileError: () => { document.getElementById("semruas").hidden = false; },
+    renderSubLayers: p => { const [[w, s], [e, n]] = p.tile.boundingBox; return new deck.BitmapLayer(p, { data: null, image: p.data, bounds: [w, s, e, n], desaturate: 0.55 }); },
+  });
+}
+function layers() {
+  const col = MODOS[state.modo].color, comRuas = state.fundo === "ruas";
+  document.getElementById("credito").hidden = !comRuas;
+  if (!comRuas) document.getElementById("semruas").hidden = true;
+  return [
+    comRuas && ruas(),
+    new deck.GeoJsonLayer({ id: "uf", data: ESTADOS, filled: !comRuas, stroked: true, getFillColor: C.land, getLineColor: C.border, lineWidthMinPixels: 0.8, updateTriggers: { getFillColor: C.land, getLineColor: C.border } }),
+    new deck.ScatterplotLayer({
+      id: "locais", data: idx.filter(visible), pickable: true, radiusUnits: "meters",
+      getPosition: i => [LOCAIS[i][1], LOCAIS[i][0]], getRadius: i => 14 * Math.sqrt(LOCAIS[i][7]),
+      radiusMinPixels: 1.6, radiusMaxPixels: 16, getFillColor: col, opacity: 0.85,
+      stroked: true, getLineColor: [...rgb(css("--panel")), 160], lineWidthMinPixels: 0.3,
+      updateTriggers: { getFillColor: [state.modo, C], getLineColor: C },
+      onHover: showTip,
+    }),
+  ];
+}
+const tip = document.getElementById("tip");
+const f1 = v => isNaN(v) ? "–" : v.toFixed(1).replace(".", ",") + "%";
+function showTip({ object: i, x, y }) {
+  if (i == null) { tip.hidden = true; return; }
+  const r = LOCAIS[i], d = b26[i] - b22t1[i];
+  tip.innerHTML = `<h3>${r[5]}</h3><div class="where">${BAIRROS[r[4]] ? BAIRROS[r[4]] + " · " : ""}${MUNS[r[3]]} · ${r[6]} seç${r[6] > 1 ? "ões" : "ão"} · ${fmtN(r[7])} votos em 2026</div>
+    <table><tr><td><span class="sw" style="background:var(--c${cat[i]})"></span>${CATS[cat[i]].n}</td><td></td></tr>
+    <tr><td>Haddad 2018 (2º t.)</td><td>${f1(b18[i])}</td></tr>
+    <tr><td>Lula 2022 (1º t.)</td><td>${f1(b22t1[i])}</td></tr>
+    <tr><td>Lula 2022 (2º t.)</td><td>${f1(b22[i])}</td></tr>
+    <tr><td>Lula 2026 (1º t.)</td><td>${f1(b26[i])}</td></tr>
+    <tr><td>Abstenção 2022 → 2026 (1º t.)</td><td>${pct(r[21], r[20])} → ${pct(r[23], r[22])}</td></tr>
+    <tr><td>Variação 1º t. 22→26</td><td>${isNaN(d) ? "–" : (d > 0 ? "+" : "") + d.toFixed(1).replace(".", ",") + " p.p."}</td></tr></table>`;
+  tip.hidden = false;
+  const box = tip.parentElement.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+  tip.style.left = Math.min(x + 14, box.width - w - 8) + "px"; tip.style.top = Math.min(y + 14, box.height - h - 8) + "px";
+}
+// enquadra do 2º ao 98º percentil: um local mal geocodificado não puxa o mapa para outro estado
+function fit() {
+  const la = [], lo = [];
+  for (let i = 0; i < N; i++) if (inSel(i)) { la.push(LOCAIS[i][0]); lo.push(LOCAIS[i][1]); }
+  const n = la.length;
+  if (!n || state.uf < 0 && state.reg < 0 && state.mun < 0) return { longitude: -52, latitude: -15, zoom: 3.6 };
+  la.sort((x, y) => x - y); lo.sort((x, y) => x - y);
+  const q = (v, p) => v[Math.round((n - 1) * p)], p0 = n > 50 ? 0.02 : 0;
+  let a = q(la, p0), b = q(la, 1 - p0), c = q(lo, p0), e = q(lo, 1 - p0);
+  if (b - a < 0.01) { a -= 0.01; b += 0.01; } if (e - c < 0.01) { c -= 0.01; e += 0.01; } // município de um local só
+  const el = document.getElementById("map");
+  const vp = new deck.WebMercatorViewport({ width: el.clientWidth, height: el.clientHeight });
+  return vp.fitBounds([[c, a], [e, b]], { padding: 40, maxZoom: 12 });
+}
+function update(refit) {
+  renderPanel();
+  if (!deckgl) return;
+  const props = { layers: layers() };
+  if (refit) { const f = fit(); props.initialViewState = { ...view, longitude: f.longitude, latitude: f.latitude, zoom: f.zoom, transitionDuration: 600 }; }
+  deckgl.setProps(props);
+}
+
+ufSel.onchange = () => { state.uf = +ufSel.value; state.reg = -1; state.macro = -1; state.mun = -1; munIn.value = ""; fillRegs(); fillMuns(); update(true); };
+regSel.onchange = () => { state.uf < 0 ? (state.reg = +regSel.value) : (state.macro = +regSel.value); state.mun = -1; munIn.value = ""; fillMuns(); update(true); };
+munIn.onchange = () => {
+  const k = MUNS.indexOf(munIn.value); state.mun = k;
+  if (k >= 0) { for (let i = 0; i < N; i++) if (LOCAIS[i][3] === k) { state.uf = LOCAIS[i][2]; state.reg = -1; state.macro = LOCAIS[i][17]; break; } ufSel.value = state.uf; fillRegs(); }
+  update(true);
+};
+document.querySelectorAll("#modo button").forEach(b => b.onclick = () => {
+  state.modo = b.dataset.m;
+  document.querySelectorAll("#modo button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  update();
+});
+const retheme = () => { readColors(); update(); };
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", retheme);
+new MutationObserver(retheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+document.querySelectorAll("#fundo button").forEach(b => b.onclick = () => {
+  state.fundo = b.dataset.f;
+  document.querySelectorAll("#fundo button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  try { localStorage.setItem("fundo", state.fundo); } catch {}
+  update();
+});
+try { const f = localStorage.getItem("fundo"); if (f === "ruas") document.querySelector('#fundo [data-f="ruas"]').click(); } catch {}
+readColors(); fillRegs(); fillMuns(); renderPanel();
+deckgl = new deck.DeckGL({ container: "map", initialViewState: view, controller: true, layers: layers(), getCursor: ({ isHovering }) => isHovering ? "pointer" : "grab" });
+document.getElementById("loading").remove();
+</script>

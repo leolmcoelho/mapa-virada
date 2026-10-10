@@ -1,3 +1,7 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mapa da Virada 2018–2026</title>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0B9H18GD0"></script>
@@ -65,7 +69,7 @@ tr.cat:hover td, tr.cat.sel td { background: var(--bg); }
 .ramp { height: 10px; border-radius: 3px; }
 .ramp-l { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--fg2); margin-top: 4px; font-variant-numeric: tabular-nums; }
 .note { font-size: 0.74rem; color: var(--muted); line-height: 1.5; }
-main { position: relative; min-width: 0; }
+main { position: relative; min-width: 0; background: var(--bg); }
 #map { position: absolute; inset: 0; }
 #tip { position: absolute; pointer-events: none; background: var(--panel); color: var(--fg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 0.8rem; box-shadow: 0 6px 24px rgb(0 0 0 / 0.18); max-width: 300px; z-index: 5; }
 #tip h3 { margin: 0 0 2px; font-size: 0.86rem; font-family: var(--display); font-weight: 700; }
@@ -76,9 +80,15 @@ main { position: relative; min-width: 0; }
 #semruas { left: 50%; top: 12px; transform: translateX(-50%); font-size: 0.8rem; padding: 8px 12px; border: 1px solid var(--border); max-width: 80%; }
 #loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--fg2); font-size: 0.9rem; }
 @media (max-width: 760px) {
-  .app { grid-template-columns: 1fr; grid-template-rows: 58vh auto; height: auto; }
-  main { grid-row: 1; height: 58vh; }
-  aside { grid-row: 2; border-right: 0; border-top: 1px solid var(--line); overflow: visible; }
+  /* celular: mapa fixo no topo, painel rola por baixo dele */
+  .app { display: flex; flex-direction: column; height: auto; }
+  main { order: -1; flex: none; position: sticky; top: env(safe-area-inset-top, 0px); height: 45dvh; z-index: 3; border-bottom: 1px solid var(--border); }
+  aside { border-right: 0; overflow: visible; padding-top: 16px; }
+  h1 { font-size: 1.25rem; }
+  .sub { font-size: 0.8rem; }
+  #tip { left: 8px !important; right: 8px; top: auto !important; bottom: 8px; max-width: none; font-size: 0.7rem; padding: 7px 9px; max-height: 70%; overflow-y: auto; }
+  #tip h3 { font-size: 0.78rem; } #tip .where { font-size: 0.68rem; margin-bottom: 4px; } #tip table { font-size: inherit; } #tip table td { padding: 1px 4px; }
+  #semruas { top: 8px; font-size: 0.72rem; }
 }
 </style>
 
@@ -226,7 +236,7 @@ function renderPendular() {
     top.map(g => `<tr class="cat${g.k === state.macro ? " sel" : ""}" data-k="${g.k}" data-uf="${g.uf}" tabindex="0"><td class="cname">${MACROS[g.k]}
       <span class="bar"><i style="width:${(100 * g.pend / g.votos / max).toFixed(0)}%"></i></span></td>
       <td title="${fmtN(g.votos)} votantes">${curto(g.votos)}</td><td title="${fmtN(g.pend)} votos">${pct(g.pend, g.votos)}</td><td>${pct(g.mudou, g.votos)}</td><td>${pct(g.a, g.a + g.b)}</td></tr>`).join("") +
-    `</tbody></table><p class="note">Votantes: quem votou para presidente em 2026 (passe o mouse para o número exato). Pendular: % dos votos de 2026 em locais que viraram e voltaram (Bolsonaro → Lula → Flávio ou o inverso). Mudou: trocaram de lado ao menos uma vez. Clique para ir à região.</p>`;
+    `</tbody></table><p class="note">Votantes: quem votou para presidente em 2026 (passe o mouse ou toque para o número exato). Pendular: % dos votos de 2026 em locais que viraram e voltaram (Bolsonaro → Lula → Flávio ou o inverso). Mudou: trocaram de lado ao menos uma vez. Clique para ir à região.</p>`;
   el.querySelectorAll("tr.cat").forEach(tr => {
     const go = () => { state.uf = +tr.dataset.uf; state.reg = -1; state.macro = +tr.dataset.k; state.mun = -1; munIn.value = ""; ufSel.value = state.uf; fillRegs(); fillMuns(); update(true); };
     tr.onclick = go; tr.onkeydown = e => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), go());
@@ -293,13 +303,14 @@ function layers() {
       radiusMinPixels: 1.6, radiusMaxPixels: 16, getFillColor: col, opacity: 0.85,
       stroked: true, getLineColor: [...rgb(css("--panel")), 160], lineWidthMinPixels: 0.3,
       updateTriggers: { getFillColor: [state.modo, C], getLineColor: C },
-      onHover: showTip,
+      onHover: showTip, onClick: showTip,
     }),
   ];
 }
 const tip = document.getElementById("tip");
 const f1 = v => isNaN(v) ? "–" : v.toFixed(1).replace(".", ",") + "%";
 function showTip({ object: i, x, y }) {
+  if (i == null && tocou) return; // no toque, o detalhe fica aberto até tocar fora (onClick do mapa)
   if (i == null) { tip.hidden = true; return; }
   const r = LOCAIS[i], d = b26[i] - b22t1[i];
   tip.innerHTML = `<h3>${r[5]}</h3><div class="where">${BAIRROS[r[4]] ? BAIRROS[r[4]] + " · " : ""}${MUNS[r[3]]} · ${r[6]} seç${r[6] > 1 ? "ões" : "ão"} · ${fmtN(r[7])} votos em 2026</div>
@@ -315,11 +326,17 @@ function showTip({ object: i, x, y }) {
   tip.style.left = Math.min(x + 14, box.width - w - 8) + "px"; tip.style.top = Math.min(y + 14, box.height - h - 8) + "px";
 }
 // enquadra do 2º ao 98º percentil: um local mal geocodificado não puxa o mapa para outro estado
+// Brasil inteiro enquadrado no tamanho atual do mapa (no celular o zoom fixo cortava o país)
+function brasil() {
+  const el = document.getElementById("map");
+  return new deck.WebMercatorViewport({ width: el.clientWidth, height: el.clientHeight }).fitBounds([[-73.9, -33.7], [-34.8, 5.2]], { padding: 12 });
+}
+const tocou = matchMedia("(hover: none)").matches;
 function fit() {
   const la = [], lo = [];
   for (let i = 0; i < N; i++) if (inSel(i)) { la.push(LOCAIS[i][0]); lo.push(LOCAIS[i][1]); }
   const n = la.length;
-  if (!n || state.uf < 0 && state.reg < 0 && state.mun < 0) return { longitude: -52, latitude: -15, zoom: 3.6 };
+  if (!n || state.uf < 0 && state.reg < 0 && state.mun < 0) return brasil();
   la.sort((x, y) => x - y); lo.sort((x, y) => x - y);
   const q = (v, p) => v[Math.round((n - 1) * p)], p0 = n > 50 ? 0.02 : 0;
   let a = q(la, p0), b = q(la, 1 - p0), c = q(lo, p0), e = q(lo, 1 - p0);
@@ -360,6 +377,8 @@ document.querySelectorAll("#fundo button").forEach(b => b.onclick = () => {
 });
 try { const f = localStorage.getItem("fundo"); if (f === "ruas") document.querySelector('#fundo [data-f="ruas"]').click(); } catch {}
 readColors(); fillRegs(); fillMuns(); renderPanel();
-deckgl = new deck.DeckGL({ container: "map", initialViewState: view, controller: true, layers: layers(), getCursor: ({ isHovering }) => isHovering ? "pointer" : "grab" });
+const b0 = brasil(); view = { ...view, longitude: b0.longitude, latitude: b0.latitude, zoom: b0.zoom, minZoom: Math.min(3, b0.zoom) };
+deckgl = new deck.DeckGL({ container: "map", initialViewState: view, controller: true, layers: layers(),
+  onClick: ({ object }) => { if (object == null) tip.hidden = true; }, getCursor: ({ isHovering }) => isHovering ? "pointer" : "grab" });
 document.getElementById("loading").remove();
 </script>

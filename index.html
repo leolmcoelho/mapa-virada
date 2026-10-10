@@ -61,6 +61,9 @@ main { position: relative; min-width: 0; }
 #tip h3 { margin: 0 0 2px; font-size: 0.86rem; font-family: var(--display); font-weight: 700; }
 #tip .where { color: var(--fg2); font-size: 0.74rem; margin-bottom: 8px; }
 #tip table td { padding: 3px 4px; }
+#credito, #semruas { position: absolute; z-index: 4; background: var(--panel); color: var(--fg2); font-size: 0.7rem; padding: 3px 8px; border-radius: 4px; }
+#credito { right: 6px; bottom: 6px; } #credito a { color: inherit; }
+#semruas { left: 50%; top: 12px; transform: translateX(-50%); font-size: 0.8rem; padding: 8px 12px; border: 1px solid var(--border); max-width: 80%; }
 #loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--fg2); font-size: 0.9rem; }
 @media (max-width: 760px) {
   .app { grid-template-columns: 1fr; grid-template-rows: 58vh auto; height: auto; }
@@ -89,6 +92,12 @@ main { position: relative; min-width: 0; }
           <button data-m="r18" aria-pressed="false">2018</button>
         </div>
       </div>
+      <div class="full"><span class="lbl">Fundo do mapa</span>
+        <div class="seg" id="fundo">
+          <button data-f="simples" aria-pressed="true">Simples</button>
+          <button data-f="ruas" aria-pressed="false">Ruas</button>
+        </div>
+      </div>
     </div>
 
     <section>
@@ -105,6 +114,8 @@ main { position: relative; min-width: 0; }
   <main>
     <div id="map"></div>
     <div id="tip" hidden></div>
+    <div id="credito" hidden>© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors</div>
+    <div id="semruas" hidden>O fundo de ruas não carrega nesta janela. Abra o mapa em leolmcoelho.github.io/mapa-virada para vê-lo.</div>
     <div id="loading">Carregando 93 mil locais de votação…</div>
   </main>
 </div>
@@ -135,7 +146,7 @@ for (let i = 0; i < N; i++) {
   b18[i] = bip(r[8], r[9]) ?? NaN; b22t1[i] = bip(r[10], r[11]) ?? NaN; b22[i] = bip(r[12], r[13]) ?? NaN; b26[i] = bip(r[14], r[15]) ?? NaN;
 }
 
-const state = { modo: "padrao", uf: -1, reg: -1, macro: -1, mun: -1, off: new Set() };
+const state = { fundo: "simples", modo: "padrao", uf: -1, reg: -1, macro: -1, mun: -1, off: new Set() };
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const rgb = h => [1, 3, 5].map(k => parseInt(h.slice(k, k + 2), 16));
 let C = {};
@@ -246,14 +257,26 @@ function renderPanel() {
 // ---------- mapa ----------
 const idx = Array.from({ length: N }, (_, i) => i);
 let deckgl, view = { longitude: -52, latitude: -15, zoom: 3.6, minZoom: 3, maxZoom: 15 };
+// fundo de ruas: tiles padrão do OpenStreetMap (sem chave; uso leve, com crédito visível)
+function ruas() {
+  return new deck.TileLayer({
+    id: "ruas", data: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    minZoom: 0, maxZoom: 19, tileSize: 256, maxRequests: 6,
+    onTileError: () => { document.getElementById("semruas").hidden = false; },
+    renderSubLayers: p => { const [[w, s], [e, n]] = p.tile.boundingBox; return new deck.BitmapLayer(p, { data: null, image: p.data, bounds: [w, s, e, n], desaturate: 0.55 }); },
+  });
+}
 function layers() {
-  const col = MODOS[state.modo].color;
+  const col = MODOS[state.modo].color, comRuas = state.fundo === "ruas";
+  document.getElementById("credito").hidden = !comRuas;
+  if (!comRuas) document.getElementById("semruas").hidden = true;
   return [
-    new deck.GeoJsonLayer({ id: "uf", data: ESTADOS, filled: true, stroked: true, getFillColor: C.land, getLineColor: C.border, lineWidthMinPixels: 0.8, updateTriggers: { getFillColor: C.land, getLineColor: C.border } }),
+    comRuas && ruas(),
+    new deck.GeoJsonLayer({ id: "uf", data: ESTADOS, filled: !comRuas, stroked: true, getFillColor: C.land, getLineColor: C.border, lineWidthMinPixels: 0.8, updateTriggers: { getFillColor: C.land, getLineColor: C.border } }),
     new deck.ScatterplotLayer({
       id: "locais", data: idx.filter(visible), pickable: true, radiusUnits: "meters",
-      getPosition: i => [LOCAIS[i][1], LOCAIS[i][0]], getRadius: i => 40 * Math.sqrt(LOCAIS[i][7]),
-      radiusMinPixels: 1.6, radiusMaxPixels: 26, getFillColor: col, opacity: 0.85,
+      getPosition: i => [LOCAIS[i][1], LOCAIS[i][0]], getRadius: i => 14 * Math.sqrt(LOCAIS[i][7]),
+      radiusMinPixels: 1.6, radiusMaxPixels: 16, getFillColor: col, opacity: 0.85,
       stroked: true, getLineColor: [...rgb(css("--panel")), 160], lineWidthMinPixels: 0.3,
       updateTriggers: { getFillColor: [state.modo, C], getLineColor: C },
       onHover: showTip,
@@ -308,6 +331,13 @@ const retheme = () => { readColors(); update(); };
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", retheme);
 new MutationObserver(retheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
+document.querySelectorAll("#fundo button").forEach(b => b.onclick = () => {
+  state.fundo = b.dataset.f;
+  document.querySelectorAll("#fundo button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  try { localStorage.setItem("fundo", state.fundo); } catch {}
+  update();
+});
+try { const f = localStorage.getItem("fundo"); if (f === "ruas") document.querySelector('#fundo [data-f="ruas"]').click(); } catch {}
 readColors(); fillRegs(); fillMuns(); renderPanel();
 deckgl = new deck.DeckGL({ container: "map", initialViewState: view, controller: true, layers: layers(), getCursor: ({ isHovering }) => isHovering ? "pointer" : "grab" });
 document.getElementById("loading").remove();

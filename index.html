@@ -47,6 +47,7 @@ td { padding: 6px 4px; border-bottom: 1px solid var(--line); text-align: right; 
 tr.cat { cursor: pointer; }
 tr.cat.off td { opacity: 0.38; }
 tr.cat:hover td, tr.cat.sel td { background: var(--bg); }
+#pendular th, #pendular td { padding-inline: 3px; } #pendular td { white-space: nowrap; } #pendular td.cname { white-space: normal; }
 .bar { display: block; height: 4px; margin-top: 4px; background: var(--line); border-radius: 2px; }
 .bar i { display: block; height: 100%; background: var(--c2); border-radius: 2px; }
 .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 7px; vertical-align: -1px; box-shadow: 0 0 0 2px var(--panel); }
@@ -175,6 +176,7 @@ const inScope = (i, comMacro = true) => { const r = LOCAIS[i];
 const inSel = i => inScope(i) && (state.mun < 0 || LOCAIS[i][3] === state.mun);
 const visible = i => inSel(i) && !(state.modo === "padrao" && state.off.has(cat[i]));
 const fmtN = n => n.toLocaleString("pt-BR");
+const curto = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace(".", ",") + " mi" : Math.round(n / 1e3) + " mil";
 const pct = (a, b) => b ? (100 * a / b).toFixed(1).replace(".", ",") + "%" : "–";
 
 // ---------- painel ----------
@@ -211,11 +213,11 @@ function renderPendular() {
   const max = top.length ? top[0].pend / top[0].votos : 1;
   const el = document.getElementById("pendular");
   el.innerHTML = `<span class="lbl">Macrorregiões mais pendulares${state.uf >= 0 ? " em " + UFS[state.uf] : ""}</span>
-    <table><thead><tr><th>Macrorregião</th><th>Votos pendulares</th><th>Mudaram</th><th>Lula 2026</th></tr></thead><tbody>` +
+    <table><thead><tr><th>Macrorregião</th><th>Votantes</th><th>Pendular</th><th>Mudou</th><th>Lula 2026</th></tr></thead><tbody>` +
     top.map(g => `<tr class="cat${g.k === state.macro ? " sel" : ""}" data-k="${g.k}" data-uf="${g.uf}" tabindex="0"><td class="cname">${MACROS[g.k]}
       <span class="bar"><i style="width:${(100 * g.pend / g.votos / max).toFixed(0)}%"></i></span></td>
-      <td>${pct(g.pend, g.votos)}</td><td>${pct(g.mudou, g.votos)}</td><td>${pct(g.a, g.a + g.b)}</td></tr>`).join("") +
-    `</tbody></table><p class="note">Votos pendulares: % dos votos de 2026 em locais que viraram e voltaram (Bolsonaro → Lula → Flávio ou o inverso). Mudaram: trocaram de lado ao menos uma vez. Clique para ir à região.</p>`;
+      <td title="${fmtN(g.votos)} votantes">${curto(g.votos)}</td><td title="${fmtN(g.pend)} votos">${pct(g.pend, g.votos)}</td><td>${pct(g.mudou, g.votos)}</td><td>${pct(g.a, g.a + g.b)}</td></tr>`).join("") +
+    `</tbody></table><p class="note">Votantes: quem votou para presidente em 2026 (passe o mouse para o número exato). Pendular: % dos votos de 2026 em locais que viraram e voltaram (Bolsonaro → Lula → Flávio ou o inverso). Mudou: trocaram de lado ao menos uma vez. Clique para ir à região.</p>`;
   el.querySelectorAll("tr.cat").forEach(tr => {
     const go = () => { state.uf = +tr.dataset.uf; state.reg = -1; state.macro = +tr.dataset.k; state.mun = -1; munIn.value = ""; ufSel.value = state.uf; fillRegs(); fillMuns(); update(true); };
     tr.onclick = go; tr.onkeydown = e => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), go());
